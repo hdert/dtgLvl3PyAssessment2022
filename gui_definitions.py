@@ -1,4 +1,4 @@
-"""Defining the GUI, GUI elements, and GUI related variables."""
+"""Define the GUI, GUI elements, and GUI related variables."""
 from tkinter import Tk, ttk, StringVar, IntVar
 # from tkinter import Tk, ttk, Label, StringVar, Frame, Entry, Button,
 # LabelFrame, PhotoImage, ComboBox, DoubleVar
@@ -13,19 +13,22 @@ root.geometry("350x400")
 
 # Frames
 
+main_frame = ttk.Frame(root)
+main_frame.grid(row=0, column=0)
+
 # Information frame
 
-info_frame = ttk.Frame(root)
-info_frame.grid(row=0, column=0, padx=0, pady=0)
+info_frame = ttk.Frame(main_frame)
+info_frame.grid(row=0, column=0, padx=0, pady=10)
 
 # Action select frame
 
-selection_frame = ttk.Frame(root)
+selection_frame = ttk.Frame(main_frame)
 selection_frame.grid(row=1, column=0, padx=0, pady=0)
 
 # Entry and confirmation frame
 
-input_frame = ttk.Frame(root)
+input_frame = ttk.Frame(main_frame)
 input_frame.grid(row=2, column=0, padx=0, pady=20)
 
 # Information Frame Variables
@@ -127,7 +130,7 @@ value_entry_button.grid(row=1, column=0, padx=0, pady=10)
 
 
 def configure_global(frame):
-    """Add weight=1 to all widgets.
+    """Configure global options for all widgets.
 
     Args:
         frame: The Frame to do operations on.
@@ -140,6 +143,7 @@ def configure_global(frame):
             widget.grid_rowconfigure(0, weight=1)
             widget.grid_columnconfigure(0, weight=1)
             # widget.grid(padx=0, pady=0)
+            widget.grid(sticky="N")
     frame.grid_rowconfigure(0, weight=1)
     frame.grid_columnconfigure(0, weight=1)
 
