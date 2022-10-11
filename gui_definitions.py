@@ -1,5 +1,6 @@
 """Define the GUI, GUI elements, and GUI related variables."""
 from tkinter import Tk, ttk, StringVar, IntVar
+from typing import Union
 # from tkinter import Tk, ttk, Label, StringVar, Frame, Entry, Button,
 # LabelFrame, PhotoImage, ComboBox, DoubleVar
 
@@ -129,15 +130,15 @@ value_entry_button.grid(row=1, column=0, padx=0, pady=10)
 # Add global configuration to all widgets
 
 
-def configure_global(frame):
+def configure_global(frame: Union[ttk.Frame, Tk]) -> None:
     """Configure global options for all widgets.
 
     Args:
-        frame: The Frame to do operations on.
+        frame (Union[ttk.Frame, Tk]): The Frame or window to do operations on.
 
     """
     for widget in frame.winfo_children():
-        if widget.winfo_class() == "TFrame":
+        if isinstance(widget, ttk.Frame):
             configure_global(widget)
         else:
             widget.grid_rowconfigure(0, weight=1)
