@@ -44,8 +44,9 @@ if __name__ == '__main__':
     child_2 = [Child("Ricky", 50), ["Ricky", 50.00, "✅"]]
     child_3 = [Child("Dicky", 49.99), ["Dicky", 49.99, "❌"]]
     child_4 = [Child("Dawn", 49.999), ["Dawn", 50.00, "✅"]]
-    child_5 = [Child("Eliza", 49.9944444444445), ["Eliza", 50.00, "✅"]]
-    children = [child_1, child_2, child_3, child_4]
+    child_5 = [Child("Angelica", 49.9944444444445), ["Angelica", 49.99, "❌"]]
+    child_6 = [Child("Eliza", 0), ["Eliza", 0, "❌"]]
+    children = [child_1, child_2, child_3, child_4, child_5, child_6]
 
     class SimpleTest(unittest.TestCase):
         """Run tests on the Child object."""
