@@ -6,11 +6,14 @@ child_list: List = []
 
 # Initialize Tk window, widgets, and Tk Variables
 
+x_default = 350
+y_default = 475
+
 root = Tk()
 root.title("Placeholder Text")
-root.minsize(350, 400)
+root.minsize(x_default, y_default)
 
-root.geometry("350x400")
+root.geometry(f"{x_default}x{y_default}")
 
 # Frames
 
@@ -157,7 +160,7 @@ class Child:
             widget.grid(pady=5, padx=5)
 
         if len(child_list) > 3:
-            root.minsize(350 + ((len(child_list) - 3) * 90), 400)
+            root.minsize(x_default + ((len(child_list) - 3) * 90), y_default)
 
     def bonus(self) -> str:
         """Return the bonus state as an emoji so it can be used in the UI."""
@@ -187,8 +190,8 @@ class Child:
         return self._balance
 
 
-def tests():
-    """Unit tests."""
+if __name__ == '__main__':
+
     import unittest
 
     child_verification_list = [["Nicky", 1500.00, "✅"], ["Ricky", 50.00, "✅"],
@@ -227,11 +230,6 @@ def tests():
                 self.assertEqual(child.get_balance(), 49.99)
                 self.assertEqual(child.bonus(), "❌")
 
-    unittest.main()
-
-
-if __name__ == '__main__':
-
     Child("Nicky", 1500)
     Child("Ricky", 50)
     Child("Dicky", 49.99)
@@ -245,6 +243,4 @@ if __name__ == '__main__':
 
     root.mainloop()
 
-    tests()
-
-    print("stuff")
+    unittest.main()
