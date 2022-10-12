@@ -65,13 +65,6 @@ select_child_label = ttk.Label(selection_frame,
                                font="bold")
 select_child_label.grid(row=3, column=0, padx=0, pady=0)
 
-child_1_radio_button = ttk.Radiobutton(
-    selection_frame,
-    text="child_1.name",
-    variable=child_select_radio_button_result,
-    value=0)
-child_1_radio_button.grid(row=4, column=0, padx=0, pady=0)
-
 # Entry and Confirmation Frame Variables
 
 value_entry_variable = StringVar()
@@ -152,6 +145,14 @@ class Child:
                                        textvariable=self._bonus_variable)
         self._bonus_widget.grid(row=4, column=0)
 
+        self._child_selection_radio_button = ttk.Radiobutton(
+            selection_frame,
+            textvariable=self._name_variable,
+            variable=child_select_radio_button_result,
+            value=(len(child_list) - 1))
+        self._child_selection_radio_button.grid(row=(3 + len(child_list)),
+                                                column=0)
+
         for widget in self._frame.winfo_children():
             widget.grid(pady=5, padx=5)
 
@@ -186,15 +187,9 @@ class Child:
         return self._balance
 
 
-if __name__ == '__main__':
+def tests():
+    """Unit tests."""
     import unittest
-
-    Child("Nicky", 1500)
-    Child("Ricky", 50)
-    Child("Dicky", 49.99)
-    Child("Dawn", 49.999)
-    Child("Angelica", 49.9944444444445)
-    Child("Eliza", 0)
 
     child_verification_list = [["Nicky", 1500.00, "✅"], ["Ricky", 50.00, "✅"],
                                ["Dicky", 49.99, "❌"], ["Dawn", 50.00, "✅"],
@@ -232,10 +227,24 @@ if __name__ == '__main__':
                 self.assertEqual(child.get_balance(), 49.99)
                 self.assertEqual(child.bonus(), "❌")
 
+    unittest.main()
+
+
+if __name__ == '__main__':
+
+    Child("Nicky", 1500)
+    Child("Ricky", 50)
+    Child("Dicky", 49.99)
+    Child("Dawn", 49.999)
+    Child("Angelica", 49.9944444444445)
+    Child("Eliza", 0)
+
     configure_global(root)
 
     # Start the Tk window
 
     root.mainloop()
 
-    unittest.main()
+    tests()
+
+    print("stuff")
