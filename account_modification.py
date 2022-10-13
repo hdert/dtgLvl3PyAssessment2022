@@ -36,12 +36,27 @@ selection_frame.grid(row=1, column=0, padx=0, pady=0)
 input_frame = ttk.Frame(main_frame)
 input_frame.grid(row=2, column=0, padx=0, pady=10)
 
+# Entry and Confirmation Frame Variables
+
+value_entry_variable = StringVar()
+value_entry_variable.set("0.00")
+
+value_entry_button_variable = StringVar()
+value_entry_button_variable.set("Deduct Allowance")
+
 # Action Select Frame Variables
 
 deduct_change_radio_button_result = IntVar()
 deduct_change_radio_button_result.set(0)
 
 child_select_radio_button_result = IntVar()
+
+
+def change_value_entry_button_text():
+    """Set the value_entry_button text to the correct verb."""
+    value_entry_button_variable.set("Deduct Allowance" if (
+        deduct_change_radio_button_result.get() == 0) else "Set Allowance")
+
 
 # Action Select Frame Contents
 
@@ -52,30 +67,24 @@ deduct_change_label.grid(row=0, column=0, padx=0, pady=0)
 
 deduct_radio_button = ttk.Radiobutton(
     selection_frame,
-    text="Deduct",
+    text="Deduct Allowance",
     variable=deduct_change_radio_button_result,
-    value=0)
+    value=0,
+    command=change_value_entry_button_text)
 deduct_radio_button.grid(row=1, column=0, padx=0, pady=0)
 
 reset_radio_button = ttk.Radiobutton(
     selection_frame,
-    text="Reset/Change",
+    text="Reset Allowance",
     variable=deduct_change_radio_button_result,
-    value=1)
+    value=1,
+    command=change_value_entry_button_text)
 reset_radio_button.grid(row=2, column=0, padx=0, pady=0)
 
 select_child_label = ttk.Label(selection_frame,
                                text="Select Child",
                                font="bold")
 select_child_label.grid(row=3, column=0, padx=0, pady=0)
-
-# Entry and Confirmation Frame Variables
-
-value_entry_variable = StringVar()
-value_entry_variable.set("0.00")
-
-value_entry_button_variable = StringVar()
-value_entry_button_variable.set("Deduct/Set Allowance [change]")
 
 # Entry and Confirmation Frame Contents
 
@@ -106,6 +115,29 @@ def configure_global(frame: Union[ttk.Frame, Tk]) -> None:
             widget.grid(sticky="N")
     frame.grid_rowconfigure(0, weight=1)
     frame.grid_columnconfigure(0, weight=1)
+
+
+def calculate_minsize():
+    """Calculate the minimum size of the window to show all UI components."""
+    min_width = 175
+    min_height = 300
+    max_name_height = 0
+
+    for child in child_list:
+        min_width += max(child._balance_label_widget.winfo_reqwidth(),
+                         child._balance_widget.winfo_reqwidth(),
+                         child._name_widget.winfo_reqwidth())
+        min_height += child._child_selection_radio_button.winfo_reqheight()
+        if child._name_widget.winfo_reqheight() > max_name_height:
+            max_name_height = child._name_widget.winfo_reqheight()
+
+    if deduct_change_label.winfo_reqwidth() > min_width:
+        min_width = deduct_change_label.winfo_reqwidth() + 20
+
+    min_height += max_name_height
+
+    root.minsize(min_width, min_height)
+    root.geometry(f"{min_width}x{min_height}")
 
 
 class Child:
@@ -192,29 +224,6 @@ class Child:
     def get_balance(self) -> float:
         """Get the balance of the object."""
         return self._balance
-
-
-def calculate_minsize():
-    """Calculate the minimum size of the window to show all UI components."""
-    min_width = 175
-    min_height = 300
-    max_name_height = 0
-
-    for child in child_list:
-        min_width += max(child._balance_label_widget.winfo_reqwidth(),
-                         child._balance_widget.winfo_reqwidth(),
-                         child._name_widget.winfo_reqwidth())
-        min_height += child._child_selection_radio_button.winfo_reqheight()
-        if child._name_widget.winfo_reqheight() > max_name_height:
-            max_name_height = child._name_widget.winfo_reqheight()
-
-    if deduct_change_label.winfo_reqwidth() > min_width:
-        min_width = deduct_change_label.winfo_reqwidth() + 20
-
-    min_height += max_name_height
-
-    root.minsize(min_width, min_height)
-    root.geometry(f"{min_width}x{min_height}")
 
 
 # Files
