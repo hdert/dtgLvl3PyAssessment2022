@@ -52,10 +52,36 @@ deduct_change_radio_button_result.set(0)
 child_select_radio_button_result = IntVar()
 
 
-def change_value_entry_button_text():
+def change_value_entry_button_text() -> None:
     """Set the value_entry_button text to the correct verb."""
     value_entry_button_variable.set("Deduct Allowance" if (
         deduct_change_radio_button_result.get() == 0) else "Set Allowance")
+
+
+def handle_user_input() -> None:
+    """Handle user input."""
+    child_number = child_select_radio_button_result.get()
+    try:
+        value = round(float(value_entry_variable.get()), 2)
+    except ValueError:
+        show_user_message("Value entered needs to be a number, e.g. 15.30, 50")
+    if value > 999999:
+        show_user_message(
+            "Value entered too large, please enter a smaller value.")
+        return
+
+    try:
+        if deduct_change_radio_button_result.get() == 0:
+            child_list[child_number].deduct_balance(value)
+        else:
+            child_list[child_number].set_balance(value)
+    except ValueError:
+        show_user_message("Deduction amount is greater than balance.")
+
+
+def show_user_message(message: str) -> None:
+    """Show the user a message in the GUI."""
+    pass
 
 
 # Action Select Frame Contents
@@ -92,7 +118,8 @@ value_entry = ttk.Entry(input_frame, textvariable=value_entry_variable)
 value_entry.grid(row=0, column=0)
 
 value_entry_button = ttk.Button(input_frame,
-                                textvariable=value_entry_button_variable)
+                                textvariable=value_entry_button_variable,
+                                command=handle_user_input)
 value_entry_button.grid(row=1, column=0, padx=0, pady=10)
 
 # Add global configuration to all widgets
@@ -209,16 +236,20 @@ class Child:
         # last round operation in else should bring the total to 0, which is
         # valid.
         if round(float(deduction_amount), 2) > self._balance:
-            raise ValueError("Deduction Amount is greater than balance.")
+            raise ValueError("Deduction amount is greater than balance.")
         else:
             # The round() wraps around the whole statement because of a
             # hardware limitation where 50 - 49.99 = 0.00999999999999801
             # instead of 50 - 49.99 = 0.01.
             self._balance = round(self._balance - float(deduction_amount), 2)
+            self._balance_variable.set(str(self._balance))
+            self._bonus_variable.set(self.bonus())
 
     def set_balance(self, new_balance: float) -> None:
         """Set balance for object."""
         self._balance = round(float(new_balance), 2)
+        self._balance_variable.set(str(self._balance))
+        self._bonus_variable.set(self.bonus())
 
     def get_balance(self) -> float:
         """Get the balance of the object."""
