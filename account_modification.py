@@ -29,7 +29,7 @@ info_frame.grid(row=0, column=0, padx=0, pady=10)
 # Action select frame
 
 selection_frame = ttk.Frame(main_frame)
-selection_frame.grid(row=1, column=0, padx=0, pady=0)
+selection_frame.grid(row=1, column=0)
 
 # Entry and confirmation frame
 
@@ -63,7 +63,7 @@ def change_value_entry_button_text():
 deduct_change_label = ttk.Label(selection_frame,
                                 text="Deduct or Change Allowance",
                                 font="bold")
-deduct_change_label.grid(row=0, column=0, padx=0, pady=0)
+deduct_change_label.grid(row=0, column=0)
 
 deduct_radio_button = ttk.Radiobutton(
     selection_frame,
@@ -71,7 +71,7 @@ deduct_radio_button = ttk.Radiobutton(
     variable=deduct_change_radio_button_result,
     value=0,
     command=change_value_entry_button_text)
-deduct_radio_button.grid(row=1, column=0, padx=0, pady=0)
+deduct_radio_button.grid(row=1, column=0)
 
 reset_radio_button = ttk.Radiobutton(
     selection_frame,
@@ -79,17 +79,17 @@ reset_radio_button = ttk.Radiobutton(
     variable=deduct_change_radio_button_result,
     value=1,
     command=change_value_entry_button_text)
-reset_radio_button.grid(row=2, column=0, padx=0, pady=0)
+reset_radio_button.grid(row=2, column=0)
 
 select_child_label = ttk.Label(selection_frame,
                                text="Select Child",
                                font="bold")
-select_child_label.grid(row=3, column=0, padx=0, pady=0)
+select_child_label.grid(row=3, column=0)
 
 # Entry and Confirmation Frame Contents
 
 value_entry = ttk.Entry(input_frame, textvariable=value_entry_variable)
-value_entry.grid(row=0, column=0, padx=0, pady=0)
+value_entry.grid(row=0, column=0)
 
 value_entry_button = ttk.Button(input_frame,
                                 textvariable=value_entry_button_variable)
@@ -111,7 +111,6 @@ def configure_global(frame: Union[ttk.Frame, Tk]) -> None:
         else:
             widget.grid_rowconfigure(0, weight=1)
             widget.grid_columnconfigure(0, weight=1)
-            # widget.grid(padx=0, pady=0)
             widget.grid(sticky="N")
     frame.grid_rowconfigure(0, weight=1)
     frame.grid_columnconfigure(0, weight=1)
@@ -159,7 +158,7 @@ class Child:
         self._bonus_variable.set(self.bonus())
 
         self._frame = ttk.Frame(info_frame)
-        self._frame.grid(row=0, column=(len(child_list) - 1), padx=0, pady=0)
+        self._frame.grid(row=0, column=(len(child_list) - 1))
 
         self._name_widget = ttk.Label(self._frame,
                                       textvariable=self._name_variable,
