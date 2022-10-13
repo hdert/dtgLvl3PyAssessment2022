@@ -1,4 +1,4 @@
-"""Define the files, saving, and opening functions."""
+"""The first of three implementations of the saving, and opening functions."""
 from tkinter import Tk, ttk, StringVar, IntVar
 from typing import Union, List
 
@@ -197,7 +197,7 @@ class Child:
 
 def get_saved_data() -> None:
     """Get saved object data from file."""
-    children_file = open("children.txt", "r")
+    children_file = open("children.csv", "r")
     children_list = children_file.readlines()
 
     for child in children_list:
@@ -209,7 +209,7 @@ def get_saved_data() -> None:
 
 def save_data() -> None:
     """Save object data to file."""
-    children_file = open("children.txt", "w")
+    children_file = open("children.csv", "w")
 
     for child in child_list:
         children_file.write(f"{child.name},{child.get_balance()}\n")
