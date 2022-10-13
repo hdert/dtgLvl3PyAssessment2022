@@ -1,9 +1,7 @@
 """The first of three implementations to implement balance changing."""
 from tkinter import Tk, ttk, StringVar, IntVar
-from typing import Union, List
+from typing import Union
 import pickle
-
-child_list: List = []
 
 # Initialize Tk window, widgets, and Tk Variables
 
@@ -65,7 +63,8 @@ def handle_user_input() -> None:
         value = round(float(value_entry_variable.get()), 2)
     except ValueError:
         show_user_message("Value entered needs to be a number, e.g. 15.30, 50")
-    if value > 999999:
+        return
+    if abs(value) > 999999:
         show_user_message(
             "Value entered too large, please enter a smaller value.")
         return
@@ -74,6 +73,11 @@ def handle_user_input() -> None:
         if deduct_change_radio_button_result.get() == 0:
             child_list[child_number].deduct_balance(value)
         else:
+            if value < 0:
+                show_user_message(
+                    "Value entered needs to be 0 or a positive number, e.g. 0, 15.30, 100"
+                )
+                return
             child_list[child_number].set_balance(value)
     except ValueError:
         show_user_message("Deduction amount is greater than balance.")
@@ -256,6 +260,8 @@ class Child:
         return self._balance
 
 
+child_list: list[Child] = []
+
 # Files
 
 
@@ -278,21 +284,33 @@ if __name__ == '__main__':
 
     import unittest
 
-    child_verification_list = [["Nicky", 1500.00, "✅"], ["Ricky", 50.00, "✅"],
-                               ["Dicky", 49.99, "❌"], ["Dawn", 50.00, "✅"],
-                               ["Angelica", 49.99, "❌"], ["Eliza", 0.00, "❌"],
-                               ["Eliza", 0.00, "❌"], ["Eliza", 0.00, "❌"],
-                               ["Eliza", 0.00, "❌"], ["Eliza", 0.00, "❌"],
-                               ["Eliza", 0.00, "❌"], ["Eliza", 0.00, "❌"],
-                               ["Robert, and Bobby", 0.00, "❌"],
-                               ["DropTables", 0.00, "❌"],
-                               ["""Overflow,9999\nEliza""", 0.0, "❌"],
-                               ["""Overflow29999\nEliza""", 0.0, "❌"]]
+    user_input_test_change_list: list[tuple[str | float,
+                                            bool]] = [(1000000, False),
+                                                      (-1000000, False),
+                                                      (-1, True),
+                                                      ("string", False),
+                                                      (0, True), (1, True),
+                                                      (999999, False)]
+    user_input_test_reset_list: list[tuple[str | float,
+                                           bool]] = [(1000000, False),
+                                                     (-1000000, False),
+                                                     (-1, False), (0, True),
+                                                     ("string", False)]
+
+    child_verification_list: list[tuple[str | int, float, str]] = [
+        ("Nicky", 1500.00, "✅"), ("Ricky", 50.00, "✅"), ("Dicky", 49.99, "❌"),
+        ("Dawn", 50.00, "✅"), ("Angelica", 49.99, "❌"), ("Eliza", 0.00, "❌"),
+        ("Eliza", 0.00, "❌"), ("Eliza", 0.00, "❌"), ("Eliza", 0.00, "❌"),
+        ("Eliza", 0.00, "❌"), ("Eliza", 0.00, "❌"), ("Eliza", 0.00, "❌"),
+        ("Robert, and Bobby", 0.00, "❌"), ("DropTables", 0.00, "❌"),
+        ("""Overflow,9999\nEliza""", 0.0, "❌"),
+        ("""Overflow29999\nEliza""", 0.0, "❌"), ("999", 0.0, "❌")
+    ]
 
     class SimpleTest(unittest.TestCase):
         """Run tests on the Child object."""
 
-        def test_children(self):
+        def test_children(self) -> None:
             """Test that the predefined children have the correct values."""
             for i, child in enumerate(child_list):
                 self.assertEqual(child.name, child_verification_list[i][0])
@@ -300,20 +318,28 @@ if __name__ == '__main__':
                                  child_verification_list[i][1])
                 self.assertEqual(child.bonus(), child_verification_list[i][2])
 
-        def test_modify_children(self):
+        def test_modify_children(self) -> None:
             """Test modification of the children objects."""
             for i, child in enumerate(child_list):
                 child.name = "L" + child.name[1:]
-                child_verification_list[i][
-                    0] = "L" + child_verification_list[i][0][1:]
+                child_verification_list[i] = (
+                    "L" + str(child_verification_list[i][0])[1:],
+                    child_verification_list[i][1],
+                    child_verification_list[i][2])
                 self.assertEqual(child.name, child_verification_list[i][0])
                 child.deduct_balance(-50)
-                child_verification_list[i][1] += 50
+                child_verification_list[i] = (child_verification_list[i][0],
+                                              child_verification_list[i][1] +
+                                              50,
+                                              child_verification_list[i][2])
                 self.assertEqual(child.get_balance(),
                                  round(child_verification_list[i][1], 5))
                 self.assertEqual(child.bonus(), "✅")
                 child.deduct_balance(50.001)
-                child_verification_list[i][1] -= 50
+                child_verification_list[i] = (child_verification_list[i][0],
+                                              child_verification_list[i][1] -
+                                              50,
+                                              child_verification_list[i][2])
                 self.assertEqual(child.get_balance(),
                                  round(child_verification_list[i][1], 5))
                 self.assertEqual(child.bonus(), child_verification_list[i][2])
@@ -321,8 +347,38 @@ if __name__ == '__main__':
                 self.assertEqual(child.get_balance(), 49.99)
                 self.assertEqual(child.bonus(), "❌")
 
+        def test_user_input_change(self) -> None:
+            """Test user input deduct handling."""
+            deduct_change_radio_button_result.set(0)
+            selected_child = child_select_radio_button_result.get()
+            for value in user_input_test_change_list:
+                child_list[selected_child].set_balance(49.99)
+                value_entry_variable.set(str(value[0]))
+                handle_user_input()
+                child_balance = child_list[selected_child].get_balance()
+                if value[1] is True:
+                    self.assertEqual(49.99 - value[0], child_balance)
+                else:
+                    self.assertEqual(49.99, child_balance)
+                    if value[0] is float:
+                        self.assertNotEqual(49.99 - value[0], child_balance)
+
+        def test_user_input_reset(self) -> None:
+            """Test user input reset handling."""
+            deduct_change_radio_button_result.set(1)
+            selected_child = child_select_radio_button_result.get()
+            for value in user_input_test_reset_list:
+                child_list[selected_child].set_balance(49.99)
+                value_entry_variable.set(str(value[0]))
+                handle_user_input()
+                child_balance = child_list[selected_child].get_balance()
+                if value[1] is True:
+                    self.assertEqual(value[0], child_balance)
+                else:
+                    self.assertEqual(49.99, child_balance)
+                    self.assertNotEqual(value[0], child_balance)
+
     get_saved_data()
-    # Child("Roberto", 99)
 
     configure_global(root)
 
