@@ -6,8 +6,8 @@ child_list: List = []
 
 # Initialize Tk window, widgets, and Tk Variables
 
-x_default = 350
-y_default = 475
+x_default = 325
+y_default = 375
 
 root = Tk()
 root.title("Placeholder Text")
@@ -33,7 +33,7 @@ selection_frame.grid(row=1, column=0, padx=0, pady=0)
 # Entry and confirmation frame
 
 input_frame = ttk.Frame(main_frame)
-input_frame.grid(row=2, column=0, padx=0, pady=20)
+input_frame.grid(row=2, column=0, padx=0, pady=10)
 
 # Action Select Frame Variables
 
@@ -159,8 +159,10 @@ class Child:
         for widget in self._frame.winfo_children():
             widget.grid(pady=5, padx=5)
 
-        if len(child_list) > 3:
-            root.minsize(x_default + ((len(child_list) - 3) * 90), y_default)
+        root.minsize(
+            x_default +
+            (((len(child_list) - 3) * 90) if len(child_list) > 3 else 0),
+            y_default + ((len(child_list) - 1) * 16))
 
     def bonus(self) -> str:
         """Return the bonus state as an emoji so it can be used in the UI."""
@@ -196,7 +198,10 @@ if __name__ == '__main__':
 
     child_verification_list = [["Nicky", 1500.00, "✅"], ["Ricky", 50.00, "✅"],
                                ["Dicky", 49.99, "❌"], ["Dawn", 50.00, "✅"],
-                               ["Angelica", 49.99, "❌"], ["Eliza", 0.00, "❌"]]
+                               ["Angelica", 49.99, "❌"], ["Eliza", 0.00, "❌"],
+                               ["Eliza", 0.00, "❌"], ["Eliza", 0.00, "❌"],
+                               ["Eliza", 0.00, "❌"], ["Eliza", 0.00, "❌"],
+                               ["Eliza", 0.00, "❌"], ["Eliza", 0.00, "❌"]]
 
     class SimpleTest(unittest.TestCase):
         """Run tests on the Child object."""
@@ -235,6 +240,12 @@ if __name__ == '__main__':
     Child("Dicky", 49.99)
     Child("Dawn", 49.999)
     Child("Angelica", 49.9944444444445)
+    Child("Eliza", 0)
+    Child("Eliza", 0)
+    Child("Eliza", 0)
+    Child("Eliza", 0)
+    Child("Eliza", 0)
+    Child("Eliza", 0)
     Child("Eliza", 0)
 
     configure_global(root)
