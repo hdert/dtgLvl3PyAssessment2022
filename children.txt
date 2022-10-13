@@ -4,3 +4,9 @@ Dicky,49.99
 Dawn,50.0
 Angelica,49.99
 Eliza,0.0
+Eliza,0.0
+Eliza,0.0
+Eliza,0.0
+Eliza,0.0
+Eliza,0.0
+Eliza,0.0
