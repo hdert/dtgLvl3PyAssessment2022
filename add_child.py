@@ -1,12 +1,11 @@
 """The first of three implementations of the adding children ability."""
 from tkinter import Tk, ttk, StringVar, IntVar, Label, messagebox
-from typing import Union
 import pickle
 
 # Initialize Tk window, frames, widgets, and Tk Variables
 
 root = Tk()
-root.title("Placeholder Text")
+root.title("Clothing Allowance Tracker")
 
 # Frames
 
@@ -74,7 +73,7 @@ def show_user_message(message: str, error: bool = False) -> None:
 
 def show_add_child_prompt() -> None:
     """Show the child creation widgets."""
-    templateChild()
+    TemplateChild()
 
 
 # Information Frame Contents
@@ -132,7 +131,7 @@ user_message_box.grid(row=2, column=0, padx=5, pady=5)
 # Add global configuration to all widgets
 
 
-def configure_global(frame: Union[ttk.Frame, Tk]) -> None:
+def configure_global(frame: ttk.Frame | Tk) -> None:
     """Configure global options for all widgets.
 
     Args:
@@ -174,7 +173,7 @@ def calculate_minsize() -> None:
     root.geometry(f"{min_width}x{min_height}")
 
 
-class templateChild:
+class TemplateChild:
     """The templateChild is for creating a child."""
 
     def __init__(self) -> None:
@@ -211,29 +210,29 @@ class templateChild:
         self._child_allowance_cancel_button = ttk.Button(
             self._child_creation_frame,
             text="Cancel",
-            command=self.deleteTemplateChild)
+            command=self.delete_template_child)
         self._child_allowance_cancel_button.grid(row=4, column=0)
 
         self._child_allowance_create_button = ttk.Button(
             self._child_creation_frame,
             text="Create",
-            command=self.createChild)
+            command=self.create_child)
         self._child_allowance_create_button.grid(row=4, column=1)
 
         configure_global(self._child_creation_frame)
 
         calculate_minsize()
 
-    def createChild(self) -> None:
+    def create_child(self) -> None:
         """Create a child."""
         Child(self._child_name_entry_variable.get(), 0.0)
         deduct_change_radio_button_result.set(1)
         value_entry_variable.set(self._child_allowance_entry_variable.get())
         child_select_radio_button_result.set(len(child_list) - 1)
-        self.deleteTemplateChild()
+        self.delete_template_child()
         handle_user_input()
 
-    def deleteTemplateChild(self) -> None:
+    def delete_template_child(self) -> None:
         """Delete the template child and widgets."""
         self._child_creation_frame.destroy()
 
@@ -312,20 +311,27 @@ class Child:
             return
         if abs(deduction_amount) > 999999:
             show_user_message(
-                "Value entered too large, please enter a smaller value.", True)
+                "Value entered too large, " +
+                "please enter a value smaller than 1,000,000.", True)
             return
         if deduction_amount > self._balance:
             show_user_message(
-                "Please enter an amount smaller than the current account balance.",
-                True)
+                "Cannot deduct more money than is in the account!. " +
+                "Please enter an amount smaller than the " +
+                "current account balance.", True)
             return
-
         # The round() wraps around the whole statement because of a
         # hardware limitation where 50 - 49.99 = 0.00999999999999801
         # instead of 50 - 49.99 = 0.01.
-        self.set_balance(round(self._balance - deduction_amount, 2))
+        new_balance = round((self._balance - deduction_amount), 2)
+        if new_balance > 999999:
+            show_user_message(
+                "Account value cannot be higher than 1,000,000. " +
+                "Please enter a smaller amount")
+            return
+        self.set_balance(new_balance)
 
-    def set_balance(self, new_balance: float) -> None:
+    def set_balance(self, new_balance: float | str) -> None:
         """Set balance for object."""
         try:
             new_balance = round(float(new_balance), 2)
@@ -335,11 +341,12 @@ class Child:
             return
         if abs(new_balance) > 999999:
             show_user_message(
-                "Value entered too large, please enter a smaller value.", True)
+                "Value entered too large, " +
+                "please enter value smaller than 1,000,000", True)
             return
         if new_balance < 0:
             show_user_message(
-                "Value entered needs to be 0 or a positive number, e.g. 0, 15.30, 100",
+                "Value entered needs to be zero or higher, e.g. 0, 15.30, 100",
                 True)
             return
 
@@ -359,7 +366,7 @@ child_list: list[Child] = []
 
 def get_saved_data() -> None:
     """Get saved object data from file."""
-    with open("children2.pickle", "rb") as children_file:
+    with open("save_file.pickle", "rb") as children_file:
         children_list = pickle.load(children_file)
 
         for child in children_list:
@@ -368,7 +375,7 @@ def get_saved_data() -> None:
 
 def save_data() -> None:
     """Save object data to file."""
-    with open("children2.pickle", "wb") as children_file:
+    with open("save_file.pickle", "wb") as children_file:
         pickle.dump(child_list, children_file)
 
 
@@ -455,11 +462,12 @@ if __name__ == '__main__':
                 handle_user_input()
                 child_balance = child_list[selected_child].get_balance()
                 if value[1] is True:
-                    self.assertEqual(value[2] - value[0], child_balance)
+                    self.assertEqual(value[2] - float(value[0]), child_balance)
                 else:
                     self.assertEqual(value[2], child_balance)
                     if value[0] is float:
-                        self.assertNotEqual(value[2] - value[0], child_balance)
+                        self.assertNotEqual(value[2] - float(value[0]),
+                                            child_balance)
 
         def test_user_input_reset(self) -> None:
             """Test user input reset handling."""
@@ -480,8 +488,8 @@ if __name__ == '__main__':
 
     configure_global(root)
 
-    root.update()
-    root.minsize(root.winfo_width(), root.winfo_height())
+    # root.update()
+    # root.minsize(root.winfo_width(), root.winfo_height())
 
     # Start the Tk window
 
