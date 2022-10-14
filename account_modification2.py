@@ -1,5 +1,5 @@
 """The third of three implementations to implement balance changing."""
-from tkinter import Tk, ttk, StringVar, IntVar, Label
+from tkinter import Tk, ttk, StringVar, IntVar, Label, messagebox
 from typing import Union
 import pickle
 
@@ -37,6 +37,7 @@ value_entry_button_variable = StringVar()
 value_entry_button_variable.set("Deduct Allowance")
 
 user_message_box_text_variable = StringVar()
+user_message_box_text_variable.set("")
 
 # Action Select Frame Variables
 
@@ -63,9 +64,12 @@ def handle_user_input() -> None:
         child_list[child_number].set_balance(value)
 
 
-def show_user_message(message: str) -> None:
+def show_user_message(message: str, error: bool = False) -> None:
     """Show the user a message in the GUI."""
-    user_message_box_text_variable.set(message)
+    if error is True:
+        messagebox.showerror("Error!", message)
+    else:
+        user_message_box_text_variable.set(message)
 
 
 # Action Select Frame Contents
@@ -137,7 +141,7 @@ def configure_global(frame: Union[ttk.Frame, Tk]) -> None:
 def calculate_minsize():
     """Calculate the minimum size of the window to show all UI components."""
     min_width = 175
-    min_height = 325
+    min_height = 370
     max_name_height = 0
 
     for child in child_list:
@@ -227,16 +231,16 @@ class Child:
             deduction_amount = round(float(deduction_amount), 2)
         except ValueError:
             show_user_message(
-                "Value entered needs to be a number, e.g. 15.30, 50")
+                "Value entered needs to be a number, e.g. 15.30, 50", True)
             return
         if abs(deduction_amount) > 999999:
             show_user_message(
-                "Value entered too large, please enter a smaller value.")
+                "Value entered too large, please enter a smaller value.", True)
             return
         if deduction_amount > self._balance:
             show_user_message(
-                "Please enter an amount smaller than the current account balance."
-            )
+                "Please enter an amount smaller than the current account balance.",
+                True)
             return
 
         # The round() wraps around the whole statement because of a
@@ -250,16 +254,16 @@ class Child:
             new_balance = round(float(new_balance), 2)
         except ValueError:
             show_user_message(
-                "Value entered needs to be a number, e.g. 15.30, 50")
+                "Value entered needs to be a number, e.g. 15.30, 50", True)
             return
         if abs(new_balance) > 999999:
             show_user_message(
-                "Value entered too large, please enter a smaller value.")
+                "Value entered too large, please enter a smaller value.", True)
             return
         if new_balance < 0:
             show_user_message(
-                "Value entered needs to be 0 or a positive number, e.g. 0, 15.30, 100"
-            )
+                "Value entered needs to be 0 or a positive number, e.g. 0, 15.30, 100",
+                True)
             return
 
         self._balance = new_balance
