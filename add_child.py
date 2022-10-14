@@ -327,7 +327,7 @@ class Child:
         if new_balance > 999999:
             show_user_message(
                 "Account value cannot be higher than 1,000,000. " +
-                "Please enter a smaller amount")
+                "Please enter a smaller amount", True)
             return
         self.set_balance(new_balance)
 
