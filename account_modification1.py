@@ -244,9 +244,7 @@ class Child:
         # The round() wraps around the whole statement because of a
         # hardware limitation where 50 - 49.99 = 0.00999999999999801
         # instead of 50 - 49.99 = 0.01.
-        self._balance = round(self._balance - deduction_amount, 2)
-        self._balance_variable.set(str(self._balance))
-        self._bonus_variable.set(self.bonus())
+        self.set_balance(round(self._balance - deduction_amount, 2))
 
     def set_balance(self, new_balance: float) -> None:
         """Set balance for object."""
