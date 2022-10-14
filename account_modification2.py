@@ -1,18 +1,12 @@
 """The third of three implementations to implement balance changing."""
-from tkinter import Tk, ttk, StringVar, IntVar
+from tkinter import Tk, ttk, StringVar, IntVar, Label
 from typing import Union
 import pickle
 
-# Initialize Tk window, widgets, and Tk Variables
-
-x_default = 325
-y_default = 375
+# Initialize Tk window, frames, widgets, and Tk Variables
 
 root = Tk()
 root.title("Placeholder Text")
-root.minsize(x_default, y_default)
-
-root.geometry(f"{x_default}x{y_default}")
 
 # Frames
 
@@ -112,9 +106,12 @@ value_entry_button = ttk.Button(input_frame,
                                 command=handle_user_input)
 value_entry_button.grid(row=1, column=0, padx=0, pady=10)
 
-user_message_box = ttk.Label(input_frame,
-                             textvariable=user_message_box_text_variable)
-user_message_box.grid(row=2, column=0)
+user_message_box = Label(input_frame,
+                         textvariable=user_message_box_text_variable,
+                         bg="darkblue",
+                         fg="white",
+                         font=("default", 8))
+user_message_box.grid(row=2, column=0, padx=5, pady=5)
 
 # Add global configuration to all widgets
 
@@ -140,7 +137,7 @@ def configure_global(frame: Union[ttk.Frame, Tk]) -> None:
 def calculate_minsize():
     """Calculate the minimum size of the window to show all UI components."""
     min_width = 175
-    min_height = 300
+    min_height = 325
     max_name_height = 0
 
     for child in child_list:
