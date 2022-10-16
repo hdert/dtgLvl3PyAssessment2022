@@ -223,13 +223,13 @@ def set_size() -> None:
 # User data check
 
 
-def set_balance_validity_check(new_balance: float | str) -> bool:
+def set_balance_validity_check(new_balance: float | str) -> float | bool:
     """Set balance for object.
 
     Args:
         new_balance (float): The value to check.
     Returns:
-        True if new_balance is a valid value, False otherwise.
+        new_balance if new_balance is a valid value, False otherwise.
     """
     try:
         new_balance = round(float(new_balance), 2)
@@ -248,7 +248,7 @@ def set_balance_validity_check(new_balance: float | str) -> bool:
             True)
         return False
 
-    return True
+    return new_balance
 
 
 # Main function
@@ -337,10 +337,12 @@ class TemplateChild:
     def _create_child(self) -> None:
         """Create a child from the information given."""
         new_child_balance = self._child_allowance_entry_variable.get()
-        if set_balance_validity_check(new_child_balance) is True:
-            Child(self._child_name_entry_variable.get(), new_child_balance)
-            self._delete_template_child()
-            set_size()
+        child_balance = set_balance_validity_check(new_child_balance)
+        if child_balance is False:
+            return
+        Child(self._child_name_entry_variable.get(), child_balance)
+        self._delete_template_child()
+        set_size()
 
     def _delete_template_child(self) -> None:
         """Delete the template child and it's widgets."""
@@ -372,7 +374,10 @@ class Child:
             balance (float): The child's balance.
         """
         self.name = str(name)
-        self._balance = round(float(balance), 2)
+        new_balance = set_balance_validity_check(balance)
+        if new_balance is False:
+            return
+        self._balance = new_balance
         child_list.append(self)
 
         self._name_variable = StringVar()
@@ -432,7 +437,7 @@ class Child:
         """Return the bonus state as an emoji so it can be used in the UI.
 
         Returns:
-            A checkmark emoji if the balance is 50 or greater,
+            A check-mark emoji if the balance is 50 or greater,
             a cross emoji otherwise.
         """
         if self._balance >= 50.00:
@@ -481,14 +486,14 @@ class Child:
         Args:
             new_balance (float): The value to set self._balance to.
         """
-        if set_balance_validity_check(new_balance) is True:
-            self._balance = new_balance
-            self._balance_variable.set(str(self._balance))
-            self._bonus_variable.set(self.bonus())
-
-            set_size()
-        else:
+        balance = set_balance_validity_check(new_balance)
+        if balance is False:
             return
+        self._balance = balance
+        self._balance_variable.set(str(self._balance))
+        self._bonus_variable.set(self.bonus())
+
+        set_size()
 
     def get_balance(self) -> float:
         """Get the balance of the object.
