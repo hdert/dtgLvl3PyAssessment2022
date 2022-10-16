@@ -208,22 +208,21 @@ def global_gui_configuration(frame: ttk.Frame | Tk) -> None:
 
 
 def set_size() -> None:
-    """Set root.geometry to override user window resizing."""
-    # Set call minsize and maxsize with 0, to unset them. This means that
-    # the call to root.geometry() will unset any resizing.
+    """Set root.geometry to override user window resizing.
+
+    This function calls minsize and maxsize with 0, to unset them. This means
+    that the call to root.geometry() will reset the window height and width.
+    It then gets the updated window size values and put them into variables
+    for DRYness. It then sets those values as minsize and maxsize so the user
+    cannot resize the window. This helps avoid user confusion when some window
+    elements cannot be seen, or the window is resized to big.
+    """
     root.minsize(0, 0)
     root.maxsize(0, 0)
-    # Unset any forced resizing that has happened.
     root.geometry("")
-    # Call root.update() so that the window can refresh, and resize to its
-    # correct size, correct being where all widgets can be seen and do not
-    # clip.
     root.update()
-    # Get the updated window values and put them into variables for DRY.
+
     size_x, size_y = root.winfo_width(), root.winfo_height()
-    # Set those values as minsize and maxsize so the user cannot resize the
-    # window. This helps avoid user confusion when some window elements cannot
-    # be seen, or the window is resized to big.
     root.minsize(size_x, size_y)
     root.maxsize(size_x, size_y)
 
