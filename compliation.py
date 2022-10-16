@@ -7,6 +7,8 @@ import pickle
 root = Tk()
 root.title("Clothing Allowance Tracker")
 
+GLOBAL_SAVE_FILE = "save_file.pickle"
+
 # Frames
 
 main_frame = ttk.Frame(root)
@@ -161,11 +163,17 @@ def get_saved_data(save_file_location: str) -> None:
     Args:
         save_file_location (str): The location of the save file.
     """
-    with open(save_file_location, "rb") as children_file:
-        children_list = pickle.load(children_file)
+    try:
+        with open(save_file_location, "rb") as children_file:
+            children_list = pickle.load(children_file)
 
-        for child in children_list:
-            Child(child.name, child._balance)
+            for child in children_list:
+                Child(child.name, child._balance)
+    except FileNotFoundError:
+        # We pass as if the file doesn't exist, we will just start out with a
+        # blank program with no kids. This is what we want as the program has
+        # been started for the first time, as it doesn't have a save file.
+        pass
 
 
 def save_data(save_file_location: str) -> None:
@@ -256,7 +264,7 @@ def set_balance_validity_check(new_balance: float | str) -> float | bool:
 
 def main() -> None:
     """Start the program."""
-    get_saved_data("save_file.pickle")
+    get_saved_data(GLOBAL_SAVE_FILE)
 
     global_gui_configuration(root)
 
@@ -341,6 +349,7 @@ class TemplateChild:
         if child_balance is False:
             return
         Child(self._child_name_entry_variable.get(), child_balance)
+        save_data(GLOBAL_SAVE_FILE)
         self._delete_template_child()
         set_size()
 
@@ -492,6 +501,8 @@ class Child:
         self._balance = balance
         self._balance_variable.set(str(self._balance))
         self._bonus_variable.set(self.bonus())
+
+        save_data(GLOBAL_SAVE_FILE)
 
         set_size()
 
