@@ -160,35 +160,25 @@ def global_gui_configuration(frame: ttk.Frame | Tk) -> None:
     frame.grid_columnconfigure(0, weight=1)
 
 
-def calculate_minsize() -> None:
+def set_size() -> None:
     """Set root.geometry to override user window resizing."""
+    # Set call minsize and maxsize with 0, to unset them. This means that
+    # the call to root.geometry() will unset any resizing.
     root.minsize(0, 0)
     root.maxsize(0, 0)
+    # Unset any forced resizing that has happened.
     root.geometry("")
+    # Call root.update() so that the window can refresh, and resize to its
+    # correct size, correct being where all widgets can be seen and do not
+    # clip.
     root.update()
+    # Get the updated window values and put them into variables for DRY.
     size_x, size_y = root.winfo_width(), root.winfo_height()
-    print(f"{size_x}, {size_y}")
+    # Set those values as minsize and maxsize so the user cannot resize the
+    # window. This helps avoid user confusion when some window elements cannot
+    # be seen, or the window is resized to big.
     root.minsize(size_x, size_y)
     root.maxsize(size_x, size_y)
-    # min_width = 175
-    # min_height = 370
-    # max_name_height = 0
-
-    # for child in child_list:
-    #     min_width += max(child._balance_label_widget.winfo_reqwidth(),
-    #                      child._balance_widget.winfo_reqwidth(),
-    #                      child._name_widget.winfo_reqwidth())
-    #     min_height += child._child_selection_radio_button.winfo_reqheight()
-    #     if child._name_widget.winfo_reqheight() > max_name_height:
-    #         max_name_height = child._name_widget.winfo_reqheight()
-
-    # if deduct_change_label.winfo_reqwidth() > min_width:
-    #     min_width = deduct_change_label.winfo_reqwidth() + 20
-
-    # min_height += max_name_height
-
-    # root.minsize(min_width, min_height)
-    # root.geometry(f"{min_width}x{min_height}")
 
 
 # Classes
@@ -245,7 +235,7 @@ class TemplateChild:
 
         # global_gui_configuration(self._child_creation_frame)
 
-        calculate_minsize()
+        set_size()
 
     def create_child(self) -> None:
         """Create a child."""
@@ -256,13 +246,13 @@ class TemplateChild:
         self.delete_template_child()
         handle_user_input()
 
-        calculate_minsize()
+        set_size()
 
     def delete_template_child(self) -> None:
         """Delete the template child and widgets."""
         self._child_creation_frame.destroy()
 
-        calculate_minsize()
+        set_size()
 
 
 # Information Frame Contents
@@ -325,7 +315,7 @@ class Child:
         for widget in self._frame.winfo_children():
             widget.grid(pady=5, padx=5)
 
-        calculate_minsize()
+        set_size()
 
     def __getstate__(self):
         """Get the state of the instance for saving with pickle."""
@@ -367,7 +357,7 @@ class Child:
             return
         self.set_balance(new_balance)
 
-        calculate_minsize()
+        set_size()
 
     def set_balance(self, new_balance: float | str) -> None:
         """Set balance for object."""
@@ -392,7 +382,7 @@ class Child:
         self._balance_variable.set(str(self._balance))
         self._bonus_variable.set(self.bonus())
 
-        calculate_minsize()
+        set_size()
 
     def get_balance(self) -> float:
         """Get the balance of the object."""
