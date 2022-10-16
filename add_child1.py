@@ -81,6 +81,28 @@ def show_user_message(message: str, error: bool = False) -> None:
         user_message_box_text_variable.set(message)
 
 
+def on_focus_in(widget: ttk.Entry, placeholder: str) -> None:
+    """Delete placeholder text, if it exists on focus of the Entry widget.
+
+    Args:
+        widget (ttk.Entry): The entry widget to perform the operation on.
+        placeholder (str): The placeholder text.
+    """
+    if widget.get() == placeholder:
+        widget.delete("0", "end")
+
+
+def on_focus_out(widget: ttk.Entry, placeholder: str) -> None:
+    """Add placeholder text on unfocus, if the Entry widget has no contents.
+
+    Args:
+        widget (ttk.Entry): The entry widget to perform the operation on.
+        placeholder (str): The placeholder text.
+    """
+    if widget.get() == "":
+        widget.insert("0", placeholder)
+
+
 # GUI Contents
 # Action Select Frame Contents
 
@@ -113,6 +135,8 @@ select_child_label.grid(row=3, column=0)
 # Entry and Confirmation Frame Contents
 
 value_entry = ttk.Entry(input_frame, textvariable=value_entry_variable)
+value_entry.bind("<FocusIn>", lambda x: on_focus_in(value_entry, "0.00"))
+value_entry.bind("<FocusOut>", lambda x: on_focus_out(value_entry, "0.00"))
 value_entry.grid(row=0, column=0)
 
 value_entry_button = ttk.Button(input_frame,
@@ -251,6 +275,11 @@ class TemplateChild:
         self._child_name_entry = ttk.Entry(
             self._child_creation_frame,
             textvariable=self._child_name_entry_variable)
+        self._child_name_entry.bind(
+            "<FocusIn>", lambda x: on_focus_in(self._child_name_entry, "Name"))
+        self._child_name_entry.bind(
+            "<FocusOut>",
+            lambda x: on_focus_out(self._child_name_entry, "Name"))
         self._child_name_entry.grid(row=1, column=0, columnspan=2, pady=(0, 5))
 
         self._child_allowance_entry_label = ttk.Label(
@@ -260,13 +289,19 @@ class TemplateChild:
         self._child_allowance_entry_variable = StringVar()
         self._child_allowance_entry_variable.set("0.00")
 
-        self._child_allowance_entry_widget = ttk.Entry(
+        self._child_allowance_entry = ttk.Entry(
             self._child_creation_frame,
             textvariable=self._child_allowance_entry_variable)
-        self._child_allowance_entry_widget.grid(row=3,
-                                                column=0,
-                                                columnspan=2,
-                                                pady=(0, 5))
+        self._child_allowance_entry.bind(
+            "<FocusIn>",
+            lambda x: on_focus_in(self._child_allowance_entry, "0.00"))
+        self._child_allowance_entry.bind(
+            "<FocusOut>",
+            lambda x: on_focus_out(self._child_allowance_entry, "0.00"))
+        self._child_allowance_entry.grid(row=3,
+                                         column=0,
+                                         columnspan=2,
+                                         pady=(0, 5))
 
         self._child_allowance_cancel_button = ttk.Button(
             self._child_creation_frame,
