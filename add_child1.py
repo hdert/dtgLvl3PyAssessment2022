@@ -188,6 +188,37 @@ def set_size() -> None:
     root.maxsize(size_x, size_y)
 
 
+# User data check
+
+
+def set_balance_validity_check(new_balance: float | str) -> bool:
+    """Set balance for object.
+
+    Args:
+        new_balance (float): The value to check.
+    Returns:
+        True if new_balance is a valid value, False otherwise.
+    """
+    try:
+        new_balance = round(float(new_balance), 2)
+    except ValueError:
+        show_user_message("Value entered needs to be a number, e.g. 15.30, 50",
+                          True)
+        return False
+    if abs(new_balance) > 999999:
+        show_user_message(
+            "Value entered too large, " +
+            "please enter value smaller than 1,000,000", True)
+        return False
+    if new_balance < 0:
+        show_user_message(
+            "Value entered needs to be zero or higher, e.g. 0, 15.30, 100",
+            True)
+        return False
+
+    return True
+
+
 # Main function
 
 
@@ -241,18 +272,18 @@ class TemplateChild:
             self._child_creation_frame,
             text="Cancel",
             command=self.delete_template_child)
-        self._child_allowance_cancel_button.grid(row=4, column=0)
+        self._child_allowance_cancel_button.grid(row=4, column=0, padx=(10, 0))
 
         self._child_allowance_create_button = ttk.Button(
             self._child_creation_frame,
             text="Create",
             command=self.create_child)
-        self._child_allowance_create_button.grid(row=4, column=1)
+        self._child_allowance_create_button.grid(row=4, column=1, padx=(0, 5))
 
-        # for widget in self._child_creation_frame.winfo_children():
-        #     widget.grid(pady=5, padx=5)
-
-        # global_gui_configuration(self._child_creation_frame)
+        for widget in self._child_creation_frame.winfo_children():
+            widget.grid_rowconfigure(0, weight=1)
+            widget.grid_columnconfigure(0, weight=1)
+            widget.grid(sticky="N", padx=5)
 
         set_size()
 
@@ -406,28 +437,14 @@ class Child:
         Args:
             new_balance (float): The value to set self._balance to.
         """
-        try:
-            new_balance = round(float(new_balance), 2)
-        except ValueError:
-            show_user_message(
-                "Value entered needs to be a number, e.g. 15.30, 50", True)
-            return
-        if abs(new_balance) > 999999:
-            show_user_message(
-                "Value entered too large, " +
-                "please enter value smaller than 1,000,000", True)
-            return
-        if new_balance < 0:
-            show_user_message(
-                "Value entered needs to be zero or higher, e.g. 0, 15.30, 100",
-                True)
-            return
+        if set_balance_validity_check(new_balance) is True:
+            self._balance = new_balance
+            self._balance_variable.set(str(self._balance))
+            self._bonus_variable.set(self.bonus())
 
-        self._balance = new_balance
-        self._balance_variable.set(str(self._balance))
-        self._bonus_variable.set(self.bonus())
-
-        set_size()
+            set_size()
+        else:
+            return
 
     def get_balance(self) -> float:
         """Get the balance of the object.
@@ -441,5 +458,4 @@ class Child:
 child_list: list[Child] = []
 
 if __name__ == '__main__':
-
     main()
