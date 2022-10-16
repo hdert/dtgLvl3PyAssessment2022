@@ -328,14 +328,11 @@ class TemplateChild:
 
     def _create_child(self) -> None:
         """Create a child from the information given."""
-        Child(self._child_name_entry_variable.get(), 0.0)
-        deduct_change_radio_button_result.set(1)
-        value_entry_variable.set(self._child_allowance_entry_variable.get())
-        child_select_radio_button_result.set(len(child_list) - 1)
-        self._delete_template_child()
-        handle_user_input()
-
-        set_size()
+        new_child_balance = self._child_allowance_entry_variable.get()
+        if set_balance_validity_check(new_child_balance) is True:
+            Child(self._child_name_entry_variable.get(), new_child_balance)
+            self._delete_template_child()
+            set_size()
 
     def _delete_template_child(self) -> None:
         """Delete the template child and it's widgets."""
