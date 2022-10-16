@@ -188,6 +188,18 @@ def set_size() -> None:
     root.maxsize(size_x, size_y)
 
 
+# Main function
+
+
+def main() -> None:
+    """Start the program."""
+    get_saved_data()
+
+    global_gui_configuration(root)
+
+    root.mainloop()
+
+
 # Classes
 
 
@@ -430,10 +442,4 @@ child_list: list[Child] = []
 
 if __name__ == '__main__':
 
-    get_saved_data()
-
-    global_gui_configuration(root)
-
-    # Start the Tk window
-
-    root.mainloop()
+    main()
