@@ -1,6 +1,7 @@
 """A module with everything required for unittests."""
 from compliation import *
 import unittest
+import pickle
 
 user_input_test_change_list: list[tuple[str | float, bool,
                                         float]] = [(1000000, False, 0),
