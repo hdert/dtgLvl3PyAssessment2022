@@ -1,5 +1,5 @@
 """A module with everything required for unittests."""
-from add_child import *
+from compliation import *
 import unittest
 
 user_input_test_change_list: list[tuple[str | float, bool,
@@ -103,8 +103,23 @@ class SimpleTest(unittest.TestCase):
                 self.assertNotEqual(value[0], child_balance)
 
 
+def get_saved_data() -> None:
+    """Get saved object data from file."""
+    with open("testing_save_file.pickle", "rb") as children_file:
+        children_list = pickle.load(children_file)
+
+        for child in children_list:
+            Child(child.name, child._balance)
+
+
+def save_data() -> None:
+    """Save object data to file."""
+    with open("testing_save_file.pickle", "wb") as children_file:
+        pickle.dump(child_list, children_file)
+
+
 if __name__ == "__main__":
 
     get_saved_data()
-    configure_global(root)
+    global_gui_configuration(root)
     unittest.main()
