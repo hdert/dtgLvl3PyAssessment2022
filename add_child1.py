@@ -67,7 +67,14 @@ def handle_user_input() -> None:
 
 
 def show_user_message(message: str, error: bool = False) -> None:
-    """Show the user a message in the GUI."""
+    """Show the user a message in the GUI.
+
+    Args:
+        message (str): The message to show to the user.
+        error (bool): Whether or not the message is an error.
+            Defaults to False.
+
+    """
     if error is True:
         messagebox.showerror("Error!", message)
     else:
@@ -188,7 +195,7 @@ class TemplateChild:
     """A class that manages child creation, and it's GUI widgets."""
 
     def __init__(self) -> None:
-        """Initialize the templateChild."""
+        """Initialize the TemplateChild."""
         self._child_creation_frame = ttk.Frame(info_frame)
         self._child_creation_frame.grid(row=0, column=len(child_list))
 
@@ -238,7 +245,7 @@ class TemplateChild:
         set_size()
 
     def create_child(self) -> None:
-        """Create a child."""
+        """Create a child from the information given."""
         Child(self._child_name_entry_variable.get(), 0.0)
         deduct_change_radio_button_result.set(1)
         value_entry_variable.set(self._child_allowance_entry_variable.get())
@@ -249,7 +256,7 @@ class TemplateChild:
         set_size()
 
     def delete_template_child(self) -> None:
-        """Delete the template child and widgets."""
+        """Delete the template child and it's widgets."""
         self._child_creation_frame.destroy()
 
         set_size()
@@ -264,10 +271,19 @@ add_child_button.grid(row=1, column=0, columnspan=999, pady=(0, 20))
 
 
 class Child:
-    """The child stores all of the details about itself."""
+    """The child stores all of the details about itself.
+
+    Attributes:
+        name (str): The child's name.
+    """
 
     def __init__(self, name: str, balance: float) -> None:
-        """Initialize the Child object."""
+        """Initialize the Child object.
+
+        Args:
+            name (str): The name of the child.
+            balance (float): The child's balance.
+        """
         self.name = str(name)
         self._balance = round(float(balance), 2)
         child_list.append(self)
@@ -317,18 +333,31 @@ class Child:
 
         set_size()
 
-    def __getstate__(self):
-        """Get the state of the instance for saving with pickle."""
+    def __getstate__(self) -> dict[str, str | float]:
+        """Get the state of the instance for saving with pickle.
+
+        Returns:
+            The name and balance attributes of Child.
+        """
         return {'name': self.name, '_balance': self._balance}
 
     def bonus(self) -> str:
-        """Return the bonus state as an emoji so it can be used in the UI."""
+        """Return the bonus state as an emoji so it can be used in the UI.
+
+        Returns:
+            A checkmark emoji if the balance is 50 or greater,
+            a cross emoji otherwise.
+        """
         if self._balance >= 50.00:
             return "✅"
         return "❌"
 
     def deduct_balance(self, deduction_amount: float | str) -> None:
-        """Deduct balance for object."""
+        """Deduct balance for object.
+
+        Args:
+            deduction_amount (float): The amount to deduct from the instance.
+        """
         try:
             deduction_amount = round(float(deduction_amount), 2)
         except ValueError:
@@ -360,7 +389,11 @@ class Child:
         set_size()
 
     def set_balance(self, new_balance: float | str) -> None:
-        """Set balance for object."""
+        """Set balance for object.
+
+        Args:
+            new_balance (float): The value to set self._balance to.
+        """
         try:
             new_balance = round(float(new_balance), 2)
         except ValueError:
@@ -385,7 +418,11 @@ class Child:
         set_size()
 
     def get_balance(self) -> float:
-        """Get the balance of the object."""
+        """Get the balance of the object.
+
+        Returns:
+            The instance's balance.
+        """
         return self._balance
 
 
