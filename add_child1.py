@@ -275,6 +275,8 @@ class TemplateChild:
         self._child_name_entry = ttk.Entry(
             self._child_creation_frame,
             textvariable=self._child_name_entry_variable)
+        # The second passed argument of the on_focus functions is hardcoded as
+        # you can't get the value from the StringVar as that changes.
         self._child_name_entry.bind(
             "<FocusIn>", lambda x: on_focus_in(self._child_name_entry, "Name"))
         self._child_name_entry.bind(
@@ -292,6 +294,8 @@ class TemplateChild:
         self._child_allowance_entry = ttk.Entry(
             self._child_creation_frame,
             textvariable=self._child_allowance_entry_variable)
+        # The second passed argument of the on_focus functions is hardcoded as
+        # you can't get the value from the StringVar as that changes.
         self._child_allowance_entry.bind(
             "<FocusIn>",
             lambda x: on_focus_in(self._child_allowance_entry, "0.00"))
@@ -306,13 +310,13 @@ class TemplateChild:
         self._child_allowance_cancel_button = ttk.Button(
             self._child_creation_frame,
             text="Cancel",
-            command=self.delete_template_child)
+            command=self._delete_template_child)
         self._child_allowance_cancel_button.grid(row=4, column=0, padx=(10, 0))
 
         self._child_allowance_create_button = ttk.Button(
             self._child_creation_frame,
             text="Create",
-            command=self.create_child)
+            command=self._create_child)
         self._child_allowance_create_button.grid(row=4, column=1, padx=(0, 5))
 
         for widget in self._child_creation_frame.winfo_children():
@@ -322,18 +326,18 @@ class TemplateChild:
 
         set_size()
 
-    def create_child(self) -> None:
+    def _create_child(self) -> None:
         """Create a child from the information given."""
         Child(self._child_name_entry_variable.get(), 0.0)
         deduct_change_radio_button_result.set(1)
         value_entry_variable.set(self._child_allowance_entry_variable.get())
         child_select_radio_button_result.set(len(child_list) - 1)
-        self.delete_template_child()
+        self._delete_template_child()
         handle_user_input()
 
         set_size()
 
-    def delete_template_child(self) -> None:
+    def _delete_template_child(self) -> None:
         """Delete the template child and it's widgets."""
         self._child_creation_frame.destroy()
 
