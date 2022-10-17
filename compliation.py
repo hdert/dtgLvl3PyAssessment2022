@@ -216,8 +216,7 @@ value_entry_button.grid(row=1, column=0, padx=0, pady=10)
 user_message_box = Label(input_frame,
                          textvariable=user_message_box_text_variable,
                          bg="darkblue",
-                         fg="white",
-                         font=("default", 8))
+                         fg="white")
 user_message_box.grid(row=2, column=0, padx=5, pady=5)
 
 # Main Functions
