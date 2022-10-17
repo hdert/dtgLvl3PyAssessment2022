@@ -41,7 +41,7 @@ class SimpleTest(unittest.TestCase):
     def test_children(self) -> None:
         """Test that the predefined children have the correct values."""
         for i, child in enumerate(child_list):
-            self.assertEqual(child.name, child_verification_list[i][0])
+            self.assertEqual(child._name, child_verification_list[i][0])
             self.assertEqual(child.get_balance(),
                              child_verification_list[i][1])
             self.assertEqual(child.bonus(), child_verification_list[i][2])
@@ -49,11 +49,11 @@ class SimpleTest(unittest.TestCase):
     def test_modify_children(self) -> None:
         """Test modification of the children objects."""
         for i, child in enumerate(child_list):
-            child.name = "L" + child.name[1:]
+            child._name = "L" + child._name[1:]
             child_verification_list[i] = (
                 "L" + str(child_verification_list[i][0])[1:],
                 child_verification_list[i][1], child_verification_list[i][2])
-            self.assertEqual(child.name, child_verification_list[i][0])
+            self.assertEqual(child._name, child_verification_list[i][0])
             child.deduct_balance(-50)
             child_verification_list[i] = (child_verification_list[i][0],
                                           round(
