@@ -1,5 +1,8 @@
 """A module with everything required for unittests."""
-from compliation import *
+from compliation import (Child, child_list, handle_user_input,
+                         deduct_change_radio_button_result,
+                         child_select_radio_button_result,
+                         value_entry_variable, global_gui_configuration, root)
 import unittest
 import pickle
 
