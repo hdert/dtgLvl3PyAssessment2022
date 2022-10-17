@@ -52,11 +52,13 @@ child_select_radio_button_result = IntVar()
 
 
 def change_value_entry_button_text() -> None:
-    """Set the value_entry_button text to the correct verb."""
+    """Manipulate the GUI to make sense for the selected action."""
     selection = deduct_change_radio_button_result.get()
+    list_of_placeholders = ["0.00", "Name", ""]
     if selection == 0:
         value_entry_button_variable.set("Deduct Allowance")
-        if value_entry_variable.get() in ["0.00", "Name"]:
+        value_entry.config(state="enabled")
+        if value_entry_variable.get() in list_of_placeholders:
             value_entry_variable.set("")
             on_focus_out(value_entry, "0.00")
         value_entry.bind("<FocusIn>",
@@ -65,7 +67,8 @@ def change_value_entry_button_text() -> None:
                          lambda x: on_focus_out(value_entry, "0.00"))
     elif selection == 1:
         value_entry_button_variable.set("Set Allowance")
-        if value_entry_variable.get() in ["0.00", "Name"]:
+        value_entry.config(state="enabled")
+        if value_entry_variable.get() in list_of_placeholders:
             value_entry_variable.set("")
             on_focus_out(value_entry, "0.00")
         value_entry.bind("<FocusIn>",
@@ -74,13 +77,20 @@ def change_value_entry_button_text() -> None:
                          lambda x: on_focus_out(value_entry, "0.00"))
     elif selection == 2:
         value_entry_button_variable.set("Change Name")
-        if value_entry_variable.get() in ["0.00", "Name"]:
+        value_entry.config(state="enabled")
+        if value_entry_variable.get() in list_of_placeholders:
             value_entry_variable.set("")
             on_focus_out(value_entry, "Name")
         value_entry.bind("<FocusIn>",
                          lambda x: on_focus_in(value_entry, "Name"))
         value_entry.bind("<FocusOut>",
                          lambda x: on_focus_out(value_entry, "Name"))
+    elif selection == 3:
+        value_entry_button_variable.set("Delete Child")
+        value_entry_variable.set("")
+        value_entry.config(state="disabled")
+        value_entry.unbind("<FocusIn>")
+        value_entry.unbind("<FocusOut>")
 
 
 def handle_user_input() -> None:
@@ -98,8 +108,8 @@ def handle_user_input() -> None:
     elif selection == 2:
         child_list[child_number].set_name(value)
         value_entry_variable.set("Name")
-    else:
-        pass
+    elif selection == 3:
+        child_list[child_number].delete_child()
 
 
 def show_user_message(message: str, error: bool = False) -> None:
@@ -115,6 +125,7 @@ def show_user_message(message: str, error: bool = False) -> None:
         messagebox.showerror("Error!", message)
     else:
         user_message_box_text_variable.set(message)
+        set_size()
 
 
 def on_focus_in(widget: ttk.Entry, placeholder: str) -> None:
@@ -145,7 +156,7 @@ def on_focus_out(widget: ttk.Entry, placeholder: str) -> None:
 deduct_change_label = ttk.Label(selection_frame,
                                 text="Select Action",
                                 font="bold")
-deduct_change_label.grid(row=0, column=0)
+deduct_change_label.grid(row=0, column=0, padx=10)
 
 deduct_radio_button = ttk.Radiobutton(
     selection_frame,
@@ -171,10 +182,18 @@ name_change_radio_button = ttk.Radiobutton(
     command=change_value_entry_button_text)
 name_change_radio_button.grid(row=3, column=0)
 
+delete_child_radio_button = ttk.Radiobutton(
+    selection_frame,
+    text="Delete Child",
+    variable=deduct_change_radio_button_result,
+    value=3,
+    command=change_value_entry_button_text)
+delete_child_radio_button.grid(row=4, column=0)
+
 select_child_label = ttk.Label(selection_frame,
                                text="Select Child",
                                font="bold")
-select_child_label.grid(row=4, column=0)
+select_child_label.grid(row=5, column=0)
 
 # Entry and Confirmation Frame Contents
 
@@ -429,6 +448,7 @@ class Child:
             return
         self._balance = new_balance
         child_list.append(self)
+        self._list_index = (len(child_list) - 1)
 
         self._name_variable = StringVar()
         self._name_variable.set(self._name)
@@ -440,7 +460,7 @@ class Child:
         self._bonus_variable.set(self.bonus())
 
         self._frame = ttk.Frame(info_frame)
-        self._frame.grid(row=0, column=(len(child_list) - 1))
+        self._frame.grid(row=0, column=self._list_index)
 
         self._name_widget = ttk.Label(self._frame,
                                       textvariable=self._name_variable,
@@ -467,7 +487,7 @@ class Child:
             textvariable=self._name_variable,
             variable=child_select_radio_button_result,
             value=(len(child_list) - 1))
-        self._child_selection_radio_button.grid(row=(4 + len(child_list)),
+        self._child_selection_radio_button.grid(row=(6 + self._list_index),
                                                 column=0)
 
         for widget in self._frame.winfo_children():
@@ -481,7 +501,7 @@ class Child:
         Returns:
             The name and balance attributes of Child.
         """
-        return {'name': self._name, '_balance': self._balance}
+        return {'_name': self._name, '_balance': self._balance}
 
     def bonus(self) -> str:
         """Return the bonus state as an emoji so it can be used in the UI.
@@ -529,7 +549,7 @@ class Child:
         self.set_balance(new_balance)
 
         show_user_message(
-            f"Success, removed ${deduction_amount} from {self.get_name()}'s" +
+            f"Success, removed ${deduction_amount} from {self.get_name()}'s " +
             f"balance, {self.get_name()}'s balance is now " +
             f"${self.get_balance()}.",
             error=False)
@@ -585,6 +605,46 @@ class Child:
             Name as a string.
         """
         return self._name
+
+    def delete_child(self) -> None:
+        """Delete instance.
+
+        Since this is a irreversible operation, it asks the user whether they
+        really want to delete the child. If the user cancels the operation, it
+        gives the user reassuring feedback that the child has not been deleted.
+        If the user affirms that they want to delete the child, these actions
+        are carried out:
+        - The child deletes itself from the child_list
+        - The child deletes it's GUI widgets
+        - The child saves the program data, now without itself as it is no
+            longer in the child_list
+        - Now that the program has saved, a soft reload is initiated, in this
+            soft reload the following happens:
+            - all Child class generated elements are destroyed
+            - child_list is cleared
+            - child_list and the GUI are repopulated by get_saved_data()
+        After the soft reload, the user is shown a success message, and the
+        child_select radio buttons is set back to the default value. This is
+        because the value is no longer valid, as that value has been deleted.
+        """
+        response = messagebox.askyesno(
+            "Are You Sure?",
+            f"Are you sure you want to delete {self.get_name()} PERMANENTLY?")
+        if response is True:
+            child_list.pop(self._list_index)
+            self._frame.destroy()
+            self._child_selection_radio_button.destroy()
+            save_data(GLOBAL_SAVE_FILE)
+            for child in child_list:
+                child._frame.destroy()
+                child._child_selection_radio_button.destroy()
+            child_list.clear()
+            get_saved_data(GLOBAL_SAVE_FILE)
+            show_user_message(f"Success, deleted child {self._name}",
+                              error=False)
+            child_select_radio_button_result.set(0)
+        else:
+            show_user_message(f"Canceled {self._name}'s deletion", error=False)
 
 
 child_list: list[Child] = []
