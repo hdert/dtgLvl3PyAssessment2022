@@ -486,6 +486,11 @@ class Child:
             return
         self.set_balance(new_balance)
 
+        show_user_message(
+            f"Success, removed ${deduction_amount} from {self.name}'s balance,"
+            + f" {self.name}'s balance is now ${self.get_balance()}.",
+            error=False)
+
         set_size()
 
     def set_balance(self, new_balance: float | str) -> None:
@@ -502,6 +507,10 @@ class Child:
         self._bonus_variable.set(self.bonus())
 
         save_data(GLOBAL_SAVE_FILE)
+
+        show_user_message(
+            f"Success, set {self.name}'s balance to ${self.get_balance()}.",
+            error=False)
 
         set_size()
 
