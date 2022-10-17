@@ -53,19 +53,53 @@ child_select_radio_button_result = IntVar()
 
 def change_value_entry_button_text() -> None:
     """Set the value_entry_button text to the correct verb."""
-    value_entry_button_variable.set("Deduct Allowance" if (
-        deduct_change_radio_button_result.get() == 0) else "Set Allowance")
+    selection = deduct_change_radio_button_result.get()
+    if selection == 0:
+        value_entry_button_variable.set("Deduct Allowance")
+        if value_entry_variable.get() in ["0.00", "Name"]:
+            value_entry_variable.set("")
+            on_focus_out(value_entry, "0.00")
+        value_entry.bind("<FocusIn>",
+                         lambda x: on_focus_in(value_entry, "0.00"))
+        value_entry.bind("<FocusOut>",
+                         lambda x: on_focus_out(value_entry, "0.00"))
+    elif selection == 1:
+        value_entry_button_variable.set("Set Allowance")
+        if value_entry_variable.get() in ["0.00", "Name"]:
+            value_entry_variable.set("")
+            on_focus_out(value_entry, "0.00")
+        value_entry.bind("<FocusIn>",
+                         lambda x: on_focus_in(value_entry, "0.00"))
+        value_entry.bind("<FocusOut>",
+                         lambda x: on_focus_out(value_entry, "0.00"))
+    elif selection == 2:
+        value_entry_button_variable.set("Change Name")
+        if value_entry_variable.get() in ["0.00", "Name"]:
+            value_entry_variable.set("")
+            on_focus_out(value_entry, "Name")
+        value_entry.bind("<FocusIn>",
+                         lambda x: on_focus_in(value_entry, "Name"))
+        value_entry.bind("<FocusOut>",
+                         lambda x: on_focus_out(value_entry, "Name"))
 
 
 def handle_user_input() -> None:
     """Handle user from the main user button 'value_entry_button'."""
     child_number = child_select_radio_button_result.get()
     value = value_entry_variable.get()
+    selection = deduct_change_radio_button_result.get()
 
-    if deduct_change_radio_button_result.get() == 0:
+    if selection == 0:
         child_list[child_number].deduct_balance(value)
-    else:
+        value_entry_variable.set("0.00")
+    elif selection == 1:
         child_list[child_number].set_balance(value)
+        value_entry_variable.set("0.00")
+    elif selection == 2:
+        child_list[child_number].set_name(value)
+        value_entry_variable.set("Name")
+    else:
+        pass
 
 
 def show_user_message(message: str, error: bool = False) -> None:
@@ -109,7 +143,7 @@ def on_focus_out(widget: ttk.Entry, placeholder: str) -> None:
 # Action Select Frame Contents
 
 deduct_change_label = ttk.Label(selection_frame,
-                                text="Deduct or Change Allowance",
+                                text="Select Action",
                                 font="bold")
 deduct_change_label.grid(row=0, column=0)
 
@@ -129,10 +163,18 @@ reset_radio_button = ttk.Radiobutton(
     command=change_value_entry_button_text)
 reset_radio_button.grid(row=2, column=0)
 
+name_change_radio_button = ttk.Radiobutton(
+    selection_frame,
+    text="Change Name",
+    variable=deduct_change_radio_button_result,
+    value=2,
+    command=change_value_entry_button_text)
+name_change_radio_button.grid(row=3, column=0)
+
 select_child_label = ttk.Label(selection_frame,
                                text="Select Child",
                                font="bold")
-select_child_label.grid(row=3, column=0)
+select_child_label.grid(row=4, column=0)
 
 # Entry and Confirmation Frame Contents
 
@@ -168,7 +210,7 @@ def get_saved_data(save_file_location: str) -> None:
             children_list = pickle.load(children_file)
 
             for child in children_list:
-                Child(child.name, child._balance)
+                Child(child._name, child._balance)
     except FileNotFoundError:
         # We pass as if the file doesn't exist, we will just start out with a
         # blank program with no kids. This is what we want as the program has
@@ -381,7 +423,7 @@ class Child:
             name (str): The name of the child.
             balance (float): The child's balance.
         """
-        self.name = str(name)
+        self._name = str(name)
         new_balance = set_balance_validity_check(balance)
         if new_balance is False:
             return
@@ -389,7 +431,7 @@ class Child:
         child_list.append(self)
 
         self._name_variable = StringVar()
-        self._name_variable.set(self.name)
+        self._name_variable.set(self._name)
 
         self._balance_variable = StringVar()
         self._balance_variable.set(str(self._balance))
@@ -425,7 +467,7 @@ class Child:
             textvariable=self._name_variable,
             variable=child_select_radio_button_result,
             value=(len(child_list) - 1))
-        self._child_selection_radio_button.grid(row=(3 + len(child_list)),
+        self._child_selection_radio_button.grid(row=(4 + len(child_list)),
                                                 column=0)
 
         for widget in self._frame.winfo_children():
@@ -439,7 +481,7 @@ class Child:
         Returns:
             The name and balance attributes of Child.
         """
-        return {'name': self.name, '_balance': self._balance}
+        return {'name': self._name, '_balance': self._balance}
 
     def bonus(self) -> str:
         """Return the bonus state as an emoji so it can be used in the UI.
@@ -487,14 +529,15 @@ class Child:
         self.set_balance(new_balance)
 
         show_user_message(
-            f"Success, removed ${deduction_amount} from {self.name}'s balance,"
-            + f" {self.name}'s balance is now ${self.get_balance()}.",
+            f"Success, removed ${deduction_amount} from {self.get_name()}'s" +
+            f"balance, {self.get_name()}'s balance is now " +
+            f"${self.get_balance()}.",
             error=False)
 
         set_size()
 
     def set_balance(self, new_balance: float | str) -> None:
-        """Set balance for object.
+        """Set _balance for the instance.
 
         Args:
             new_balance (float): The value to set self._balance to.
@@ -509,7 +552,7 @@ class Child:
         save_data(GLOBAL_SAVE_FILE)
 
         show_user_message(
-            f"Success, set {self.name}'s balance to ${self.get_balance()}.",
+            f"Success, set {self.get_name()}'s balance to ${self.get_balance()}.",
             error=False)
 
         set_size()
@@ -521,6 +564,27 @@ class Child:
             The instance's balance.
         """
         return self._balance
+
+    def set_name(self, name: str) -> None:
+        """Set _name for the instance.
+
+        Args:
+            name (str): The string to set self._name to.
+        """
+        self._name = name
+        self._name_variable.set(self._name)
+
+        save_data(GLOBAL_SAVE_FILE)
+
+        show_user_message(f"Success, set {self._name}'s name.", error=False)
+
+    def get_name(self) -> str:
+        """Get instance attribute _name.
+
+        Returns:
+            Name as a string.
+        """
+        return self._name
 
 
 child_list: list[Child] = []
