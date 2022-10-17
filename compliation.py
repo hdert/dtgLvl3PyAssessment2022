@@ -2,7 +2,7 @@
 from tkinter import Tk, ttk, StringVar, IntVar, Label, messagebox
 import pickle
 
-# Initialize Tk window, frames, widgets, and Tk Variables
+# Initialize the Tk Window, Frames, Widgets, and Tk Variables
 
 root = Tk()
 root.title("Clothing Allowance Tracker")
@@ -14,17 +14,17 @@ GLOBAL_SAVE_FILE = "save_file.pickle"
 main_frame = ttk.Frame(root)
 main_frame.grid(row=0, column=0)
 
-# Information frame
+# Information Frame
 
 info_frame = ttk.Frame(main_frame)
 info_frame.grid(row=0, column=0, padx=0, pady=10)
 
-# Action select frame
+# Action Select Frame
 
 selection_frame = ttk.Frame(main_frame)
 selection_frame.grid(row=1, column=0)
 
-# Entry and confirmation frame
+# Entry and Confirmation Frame
 
 input_frame = ttk.Frame(main_frame)
 input_frame.grid(row=2, column=0, padx=0, pady=10)
@@ -43,17 +43,23 @@ user_message_box_text_variable.set("")
 
 # Action Select Frame Variables
 
-deduct_change_radio_button_result = IntVar()
-deduct_change_radio_button_result.set(0)
+action_select_radio_button_result = IntVar()
+action_select_radio_button_result.set(0)
 
 child_select_radio_button_result = IntVar()
 
 # GUI Functions
 
 
-def change_value_entry_button_text() -> None:
-    """Manipulate the GUI to make sense for the selected action."""
-    selection = deduct_change_radio_button_result.get()
+def action_select_radio_button_handler() -> None:
+    """Manipulate the GUI to make sense for the selected action.
+
+    This functions is responsible for:
+    - Changing the 'value_entry_button's text to fit the selected action.
+    - Changing the value_entry placeholder and placeholder changing binds.
+    - Disabling and enabling the value_entry Entry depending on selection.
+    """
+    selection = action_select_radio_button_result.get()
     list_of_placeholders = ["0.00", "Name", ""]
     if selection == 0:
         value_entry_button_variable.set("Deduct Allowance")
@@ -94,10 +100,10 @@ def change_value_entry_button_text() -> None:
 
 
 def handle_user_input() -> None:
-    """Handle user from the main user button 'value_entry_button'."""
+    """Process the user pressing the main button 'value_entry_button'."""
     child_number = child_select_radio_button_result.get()
     value = value_entry_variable.get()
-    selection = deduct_change_radio_button_result.get()
+    selection = action_select_radio_button_result.get()
 
     if selection == 0:
         child_list[child_number].deduct_balance(value)
@@ -113,7 +119,7 @@ def handle_user_input() -> None:
 
 
 def show_user_message(message: str, error: bool = False) -> None:
-    """Show the user a message in the GUI.
+    """Show the user a message in the GUI or as a popup depending on severity.
 
     Args:
         message (str): The message to show to the user.
@@ -129,7 +135,7 @@ def show_user_message(message: str, error: bool = False) -> None:
 
 
 def on_focus_in(widget: ttk.Entry, placeholder: str) -> None:
-    """Delete placeholder text, if it exists on focus of the Entry widget.
+    """Delete placeholder text, if it exists on focus of the specified widget.
 
     Args:
         widget (ttk.Entry): The entry widget to perform the operation on.
@@ -161,33 +167,33 @@ deduct_change_label.grid(row=0, column=0, padx=10)
 deduct_radio_button = ttk.Radiobutton(
     selection_frame,
     text="Deduct Allowance",
-    variable=deduct_change_radio_button_result,
+    variable=action_select_radio_button_result,
     value=0,
-    command=change_value_entry_button_text)
+    command=action_select_radio_button_handler)
 deduct_radio_button.grid(row=1, column=0)
 
 reset_radio_button = ttk.Radiobutton(
     selection_frame,
     text="Reset Allowance",
-    variable=deduct_change_radio_button_result,
+    variable=action_select_radio_button_result,
     value=1,
-    command=change_value_entry_button_text)
+    command=action_select_radio_button_handler)
 reset_radio_button.grid(row=2, column=0)
 
 name_change_radio_button = ttk.Radiobutton(
     selection_frame,
     text="Change Name",
-    variable=deduct_change_radio_button_result,
+    variable=action_select_radio_button_result,
     value=2,
-    command=change_value_entry_button_text)
+    command=action_select_radio_button_handler)
 name_change_radio_button.grid(row=3, column=0)
 
 delete_child_radio_button = ttk.Radiobutton(
     selection_frame,
     text="Delete Child",
-    variable=deduct_change_radio_button_result,
+    variable=action_select_radio_button_result,
     value=3,
-    command=change_value_entry_button_text)
+    command=action_select_radio_button_handler)
 delete_child_radio_button.grid(row=4, column=0)
 
 select_child_label = ttk.Label(selection_frame,
@@ -215,7 +221,7 @@ user_message_box = Label(input_frame,
 user_message_box.grid(row=2, column=0, padx=5, pady=5)
 
 # Main Functions
-# Saving and loading functions
+# Saving and Loading Functions
 
 
 def get_saved_data(save_file_location: str) -> None:
@@ -247,7 +253,7 @@ def save_data(save_file_location: str) -> None:
         pickle.dump(child_list, children_file)
 
 
-# GUI functions
+# GUI Functions
 
 
 def global_gui_configuration(frame: ttk.Frame | Tk) -> None:
@@ -288,11 +294,11 @@ def set_size() -> None:
     root.maxsize(size_x, size_y)
 
 
-# User data check
+# User Input Checker
 
 
-def set_balance_validity_check(new_balance: float | str) -> float | bool:
-    """Set balance for object.
+def check_if_valid_balance(new_balance: float | str) -> float | bool:
+    """Check if value is valid as a balance.
 
     Args:
         new_balance (float): The value to check.
@@ -319,7 +325,7 @@ def set_balance_validity_check(new_balance: float | str) -> float | bool:
     return new_balance
 
 
-# Main function
+# Main Function
 
 
 def main() -> None:
@@ -338,7 +344,11 @@ class TemplateChild:
     """A class that manages child creation, and it's GUI widgets."""
 
     def __init__(self) -> None:
-        """Initialize the TemplateChild."""
+        """Initialize the TemplateChild.
+
+        This creates the widget's and variables required for the child
+        creation GUI.
+        """
         self._child_creation_frame = ttk.Frame(info_frame)
         self._child_creation_frame.grid(row=0, column=len(child_list))
 
@@ -358,6 +368,7 @@ class TemplateChild:
         self._child_name_entry.bind(
             "<FocusOut>",
             lambda x: on_focus_out(self._child_name_entry, "Name"))
+        # We only want padding on the bottom here to separate the 'sections'.
         self._child_name_entry.grid(row=1, column=0, columnspan=2, pady=(0, 5))
 
         self._child_allowance_entry_label = ttk.Label(
@@ -378,6 +389,7 @@ class TemplateChild:
         self._child_allowance_entry.bind(
             "<FocusOut>",
             lambda x: on_focus_out(self._child_allowance_entry, "0.00"))
+        # We only want padding on the bottom here to separate the 'sections'.
         self._child_allowance_entry.grid(row=3,
                                          column=0,
                                          columnspan=2,
@@ -393,7 +405,7 @@ class TemplateChild:
             self._child_creation_frame,
             text="Create",
             command=self._create_child)
-        self._child_allowance_create_button.grid(row=4, column=1, padx=(0, 5))
+        self._child_allowance_create_button.grid(row=4, column=1, padx=(0, 10))
 
         for widget in self._child_creation_frame.winfo_children():
             widget.grid_rowconfigure(0, weight=1)
@@ -403,9 +415,13 @@ class TemplateChild:
         set_size()
 
     def _create_child(self) -> None:
-        """Create a child from the information given."""
+        """Create a child from the information given.
+
+        This method checks if the child has valid attributes, then creates
+        that child, saves the program, then deletes the TemplateChild.
+        """
         new_child_balance = self._child_allowance_entry_variable.get()
-        child_balance = set_balance_validity_check(new_child_balance)
+        child_balance = check_if_valid_balance(new_child_balance)
         if child_balance is False:
             return
         Child(self._child_name_entry_variable.get(), child_balance)
@@ -429,21 +445,21 @@ add_child_button.grid(row=1, column=0, columnspan=999, pady=(0, 20))
 
 
 class Child:
-    """The child stores all of the details about itself.
-
-    Attributes:
-        name (str): The child's name.
-    """
+    """The child stores all of the details about itself."""
 
     def __init__(self, name: str, balance: float) -> None:
         """Initialize the Child object.
+
+        This initializes values and checks their validity. It then generates
+        a widgets to show the child instance in the GUI based off of those
+        values.
 
         Args:
             name (str): The name of the child.
             balance (float): The child's balance.
         """
         self._name = str(name)
-        new_balance = set_balance_validity_check(balance)
+        new_balance = check_if_valid_balance(balance)
         if new_balance is False:
             return
         self._balance = new_balance
@@ -562,7 +578,7 @@ class Child:
         Args:
             new_balance (float): The value to set self._balance to.
         """
-        balance = set_balance_validity_check(new_balance)
+        balance = check_if_valid_balance(new_balance)
         if balance is False:
             return
         self._balance = balance
@@ -571,9 +587,9 @@ class Child:
 
         save_data(GLOBAL_SAVE_FILE)
 
-        show_user_message(
-            f"Success, set {self.get_name()}'s balance to ${self.get_balance()}.",
-            error=False)
+        show_user_message(f"Success, set {self.get_name()}'s balance to " +
+                          "${self.get_balance()}.",
+                          error=False)
 
         set_size()
 

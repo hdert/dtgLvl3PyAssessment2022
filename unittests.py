@@ -1,6 +1,6 @@
 """A module with everything required for unittests."""
 from compliation import (Child, child_list, handle_user_input,
-                         deduct_change_radio_button_result,
+                         action_select_radio_button_result,
                          child_select_radio_button_result,
                          value_entry_variable, global_gui_configuration, root)
 import unittest
@@ -76,7 +76,7 @@ class SimpleTest(unittest.TestCase):
 
     def test_user_input_change(self) -> None:
         """Test user input deduct handling."""
-        deduct_change_radio_button_result.set(0)
+        action_select_radio_button_result.set(0)
         selected_child = child_select_radio_button_result.get()
         for value in user_input_test_change_list:
             child_list[selected_child].set_balance(value[2])
@@ -93,7 +93,7 @@ class SimpleTest(unittest.TestCase):
 
     def test_user_input_reset(self) -> None:
         """Test user input reset handling."""
-        deduct_change_radio_button_result.set(1)
+        action_select_radio_button_result.set(1)
         selected_child = child_select_radio_button_result.get()
         for value in user_input_test_reset_list:
             child_list[selected_child].set_balance(999999)
