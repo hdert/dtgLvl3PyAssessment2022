@@ -411,6 +411,8 @@ class TemplateChild:
             widget.grid_columnconfigure(0, weight=1)
             widget.grid(sticky="N", padx=5)
 
+        add_child_button.config(state="disabled")
+
         set_size()
 
     def _create_child(self) -> None:
@@ -431,6 +433,8 @@ class TemplateChild:
     def _delete_template_child(self) -> None:
         """Delete the template child and it's widgets."""
         self._child_creation_frame.destroy()
+
+        add_child_button.config(state="normal")
 
         set_size()
 
@@ -587,7 +591,7 @@ class Child:
         save_data(GLOBAL_SAVE_FILE)
 
         show_user_message(f"Success, set {self.get_name()}'s balance to " +
-                          "${self.get_balance()}.",
+                          f"${self.get_balance()}.",
                           error=False)
 
         set_size()
