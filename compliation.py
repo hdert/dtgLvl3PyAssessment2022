@@ -310,15 +310,15 @@ def check_if_valid_balance(new_balance: float | str) -> float | bool:
         show_user_message("Value entered needs to be a number, e.g. 15.30, 50",
                           True)
         return False
-    if abs(new_balance) > 999999:
-        show_user_message(
-            "Value entered too large, " +
-            "please enter value smaller than 1,000,000", True)
-        return False
     if new_balance < 0:
         show_user_message(
             "Value entered needs to be zero or higher, e.g. 0, 15.30, 100",
             True)
+        return False
+    if abs(new_balance) >= 1000000:
+        show_user_message(
+            "Value entered too large, " +
+            "please enter value smaller than 1,000,000", True)
         return False
 
     return new_balance
@@ -421,11 +421,16 @@ class TemplateChild:
         This method checks if the child has valid attributes, then creates
         that child, saves the program, then deletes the TemplateChild.
         """
+        name = self._child_name_entry_variable.get()
+        if name.strip() == "":
+            show_user_message("Name entered must contain some characters",
+                              True)
+            return
         new_child_balance = self._child_allowance_entry_variable.get()
         child_balance = check_if_valid_balance(new_child_balance)
         if child_balance is False:
             return
-        Child(self._child_name_entry_variable.get(), child_balance)
+        Child(name, child_balance)
         save_data(GLOBAL_SAVE_FILE)
         self._delete_template_child()
         set_size()
@@ -545,7 +550,7 @@ class Child:
             show_user_message(
                 "Value entered needs to be a number, e.g. 15.30, 50", True)
             return
-        if abs(deduction_amount) > 999999:
+        if abs(deduction_amount) >= 1000000:
             show_user_message(
                 "Value entered too large, " +
                 "please enter a value smaller than 1,000,000.", True)
@@ -560,7 +565,7 @@ class Child:
         # hardware limitation where 50 - 49.99 = 0.00999999999999801
         # instead of 50 - 49.99 = 0.01.
         new_balance = round((self._balance - deduction_amount), 2)
-        if new_balance > 999999:
+        if new_balance >= 1000000:
             show_user_message(
                 "Account value cannot be higher than 1,000,000. " +
                 "Please enter a smaller amount", True)
