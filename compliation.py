@@ -610,12 +610,17 @@ class Child:
         Args:
             name (str): The string to set self._name to.
         """
-        self._name = name
-        self._name_variable.set(self._name)
+        if name.strip() != "":
+            self._name = name
+            self._name_variable.set(self._name)
 
-        save_data(GLOBAL_SAVE_FILE)
+            save_data(GLOBAL_SAVE_FILE)
 
-        show_user_message(f"Success, set {self._name}'s name.", error=False)
+            show_user_message(f"Success, set {self._name}'s name.",
+                              error=False)
+        else:
+            show_user_message("Name entered must contain some characters",
+                              True)
 
     def get_name(self) -> str:
         """Get instance attribute _name.
