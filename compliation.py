@@ -281,7 +281,7 @@ def set_size() -> None:
     It then gets the updated window size values and put them into variables
     for DRYness. It then sets those values as minsize and maxsize so the user
     cannot resize the window. This helps avoid user confusion when some window
-    elements cannot be seen, or the window is resized to big.
+    elements cannot be seen, or the window is resized too big.
     """
     root.minsize(0, 0)
     root.maxsize(0, 0)
