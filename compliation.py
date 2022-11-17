@@ -534,7 +534,8 @@ class Child:
             A check-mark emoji if the balance is 50 or greater,
             a cross emoji otherwise.
         """
-        if self._balance >= 50.00:
+        BONUS_LIMIT = 50.00
+        if self._balance >= BONUS_LIMIT:
             return "✅"
         return "❌"
 
@@ -544,13 +545,14 @@ class Child:
         Args:
             deduction_amount (float): The amount to deduct from the instance.
         """
+        MAX_ACCOUNT_AND_INPUT_VALUE = 1000000
         try:
             deduction_amount = round(float(deduction_amount), 2)
         except ValueError:
             show_user_message(
                 "Value entered needs to be a number, e.g. 15.30, 50", True)
             return
-        if abs(deduction_amount) >= 1000000:
+        if abs(deduction_amount) >= MAX_ACCOUNT_AND_INPUT_VALUE:
             show_user_message(
                 "Value entered too large, " +
                 "please enter a value smaller than 1,000,000.", True)
@@ -565,7 +567,7 @@ class Child:
         # hardware limitation where 50 - 49.99 = 0.00999999999999801
         # instead of 50 - 49.99 = 0.01.
         new_balance = round((self._balance - deduction_amount), 2)
-        if new_balance >= 1000000:
+        if new_balance >= MAX_ACCOUNT_AND_INPUT_VALUE:
             show_user_message(
                 "Account value cannot be higher than 1,000,000. " +
                 "Please enter a smaller amount", True)
